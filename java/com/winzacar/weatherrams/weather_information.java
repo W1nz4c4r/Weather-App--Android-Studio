@@ -29,6 +29,8 @@ public class weather_information extends AppCompatActivity {
         TextView textView = (TextView) findViewById(R.id.recive_info);
         Log.e("TAG", url);
 
+
+
         //doing the request with volley
         RequestQueue queue = Volley.newRequestQueue(this);
 

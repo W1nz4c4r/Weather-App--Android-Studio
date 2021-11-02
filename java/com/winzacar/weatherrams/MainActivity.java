@@ -1,8 +1,11 @@
 package com.rmoralessolo2016.weatherrams;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -10,10 +13,23 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import java.text.DecimalFormat;
+
 public class MainActivity extends AppCompatActivity {
+    //OpenWeatherMaps API info
     public static final String WEATHER_API_KEY = "/*YOUR API KEY*/";
     public static final String URL = "https://api.openweathermap.org/data/2.5/weather?appid=";
-    public static final String EXTRA_MESSAGE = "com./*example*/.weatherrams.MESSAGE";
+    //Intent needed
+    public static final String EXTRA_MESSAGE = "com./*EXAMPLE*/.weatherrams.MESSAGE";
+    //location GPS part
+    private static final int REQUEST_CODE_PERMISSION = 2;
+    String mPermission = Manifest.permission.ACCESS_FINE_LOCATION;
+
+    //format for the GPS location to two decimal places
+    private static final DecimalFormat df =  new DecimalFormat("0.00");
+
+    //GPS tracker
+    GPSTracker gps;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,7 +40,19 @@ public class MainActivity extends AppCompatActivity {
         EditText userIN = (EditText) findViewById(R.id.user_input);
         ImageButton go_Button = (ImageButton) findViewById(R.id.goButton);
         ImageButton location_Button = (ImageButton) findViewById(R.id.LocationButton);
-        // city or zip value
+
+
+        // getting user geolocation permission
+        try{
+            if (ActivityCompat.checkSelfPermission(this, mPermission) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{mPermission}, REQUEST_CODE_PERMISSION);
+                /*if the permission is not granted by the user, this condition
+                 * will execute everytime, otherwise your else part will work */
+            }
+        } catch (Exception e) {
+            Log.e("TAG","Exception is: " + e.getMessage());
+        }
+
 
         //adding listener to go button
         go_Button.setOnClickListener(new View.OnClickListener() {
@@ -54,6 +82,28 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+
+        //add listener to location button
+        location_Button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                gps = new GPSTracker(MainActivity.this);
+
+                //check if gps is enabled
+                if (gps.canGetLocation()){
+                    String lat = df.format(gps.getLatitude());
+                    String lon = df.format(gps.getLongitude());
+                    Log.e("TAG", "[+] lat is: "  + lat + "\n [+] lon is: " + lon);
+                    onLocationGO(lat, lon);
+                } else {
+                    //cant get location
+                    // GPS or network is not enable
+                    // Ask user to enable GPS or check settings
+                    gps.showSettingsAlert();
+                }
+            }
+        });
+
     } // end of onCreate
 
     public void onZipGO(String value){
@@ -70,7 +120,15 @@ public class MainActivity extends AppCompatActivity {
         sendURL(url);
     }// end of onCityGO
 
+    public void onLocationGO(String lat, String lon){
+        //creating url for geolocation
+        String url = URL + WEATHER_API_KEY + "&lat=" + lat + "&lon=" + lon;
+        Log.e("TAG", "the url is: " + url);
+        sendURL(url);
+    } //end of onLocationGO
+
     public void sendURL(String url){
+
         Intent intent = new Intent(getApplicationContext(),weather_information.class);
         intent.putExtra(EXTRA_MESSAGE, url);
         startActivity(intent);
