@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Weather - RAMS</string>
     <string name="z_number">Z-Number: Z######## </string>
-    <string name="potter">winzacar</string>
+    <string name="potter">WINZACAR</string>
     <string name="welcome_Text">Welcome!</string>
     <string name="info_Text">Here you will be able to check the weather by using ZIP-code, City name ot GPS (Geolocation)</string>
     <string name="placeholder">Enter City or ZIP ...</string>
