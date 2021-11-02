@@ -17,7 +17,7 @@ import java.text.DecimalFormat;
 
 public class MainActivity extends AppCompatActivity {
     //OpenWeatherMaps API info
-    public static final String WEATHER_API_KEY = "/*YOUR API KEY*/";
+    public static final String WEATHER_API_KEY = "YOUR API KEY";
     public static final String URL = "https://api.openweathermap.org/data/2.5/weather?appid=";
     //Intent needed
     public static final String EXTRA_MESSAGE = "com./*EXAMPLE*/.weatherrams.MESSAGE";
@@ -128,9 +128,9 @@ public class MainActivity extends AppCompatActivity {
     } //end of onLocationGO
 
     public void sendURL(String url){
-
+        Toast.makeText(getApplicationContext(), "Getting requested information", Toast.LENGTH_SHORT).show();
         Intent intent = new Intent(getApplicationContext(),weather_information.class);
-        intent.putExtra(EXTRA_MESSAGE, url);
+        intent.putExtra("url", url);
         startActivity(intent);
     } //end of sendURL
 
