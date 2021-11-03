@@ -1,10 +1,12 @@
-package com.rmoralessolo2016.weatherrams;
+package com./*EXAMPLE*/.weatherrams;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,6 +21,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -26,6 +29,7 @@ public class weather_information extends AppCompatActivity {
     //declaring all the items that are going to be saved form the JSON reponse
     public String zip_OR_city, temp, feel_like, min_Temp, max_Temp, humidity, pressure, lat, lon, country, description, sunrise, sunset;
     TextView weather_Tittle, CO, feels, minTemp, maxTemp, humid, press, desc, sunriseT, sunsetT;
+    private static final DecimalFormat df =  new DecimalFormat("0.00");
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,7 +50,8 @@ public class weather_information extends AppCompatActivity {
         desc = (TextView) findViewById(R.id.desc_Value);
         sunriseT = (TextView) findViewById(R.id.sunrise_Value);
         sunsetT = (TextView) findViewById(R.id.sunset_Value);
-
+        //declaring button
+        Button map_Button = (Button) findViewById(R.id.map_BTN);
 
         //doing the request with volley
         RequestQueue queue = Volley.newRequestQueue(this);
@@ -66,6 +71,17 @@ public class weather_information extends AppCompatActivity {
 
         //add the request to the RequestQueue
         queue.add(stringRequest);
+
+        map_Button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent mapIntent =  new Intent( weather_information.this, MapsActivity.class);
+                mapIntent.putExtra("latitude", lat);
+                mapIntent.putExtra("longitude", lon);
+                mapIntent.putExtra("city", zip_OR_city);
+                startActivity(mapIntent);
+            }
+        });
 
     }// end of onCreate
 
@@ -124,11 +140,11 @@ public class weather_information extends AppCompatActivity {
         //putting all the necessary information on the activity
         weather_Tittle.setText("Weather For " + zip_OR_city + ":");
         CO.setText(country);
-        feels.setText(feel_like);
-        minTemp.setText(min_Temp);
-        maxTemp.setText(max_Temp);
-        humid.setText(humidity);
-        press.setText(pressure);
+        feels.setText(k_to_c(feel_like));
+        minTemp.setText(k_to_c(min_Temp));
+        maxTemp.setText(k_to_c(max_Temp));
+        humid.setText(humidity + "%");
+        press.setText(pressure + " hPa");
         desc.setText(description);
         sunriseT.setText(unix_to_human(sunrise));
         sunsetT.setText(unix_to_human(sunset));
@@ -146,5 +162,12 @@ public class weather_information extends AppCompatActivity {
         return formattedDate;
 
     }//end of unix_to_human
+
+    public String k_to_c(String temp){
+        double kelvin = Double.parseDouble(temp);
+        double C = kelvin - 273.15;
+
+        return df.format(C) + "°C";
+    }//end of k_to_c
 
 } //end of weather_information

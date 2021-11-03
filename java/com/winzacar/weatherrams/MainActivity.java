@@ -1,4 +1,4 @@
-package com.rmoralessolo2016.weatherrams;
+package com./*EXAMPLE*/.weatherrams;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
